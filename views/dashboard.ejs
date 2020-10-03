@@ -96,7 +96,6 @@ function ajaxRequest(params) {
         obj = obj.sort(function(a, b) {
             return new Date(a.txAt) - new Date(b.txAt);
         });
-
         obj.reduce(function(res, value) {
             value.txAtMonth = new Date(value.txAt).getMonth();
             var key = value.category.name;
@@ -181,11 +180,12 @@ function ajaxRequest(params) {
             labels.push(moment().month(i).format("MMM"));
         }
         var items = [];
-        for (let i = 1; i <= categories.length; i++) {
+        $.each(categories, function(i, row) {
             items.push(result.filter(function(item, index, array) {
-                return item.categoryId == i;
+                return item.categoryId == categories[i].id;
             }));
-        }
+        });
+
         $.each(items, function(i, row) {
             if (row.length !=0 ) { 
                 var tmp = new Array(12).fill(0);
@@ -211,6 +211,7 @@ function ajaxRequest(params) {
             labels: labels,
             datasets: datasets
         };
+
         var canvas = document.getElementById('bar');
         var ctx = canvas.getContext("2d");
         var barChart = new Chart(ctx, {

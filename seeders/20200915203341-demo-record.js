@@ -1,14 +1,15 @@
 const faker = require('faker');
 
 const data = [];
+
 let status;
 let price;
 for (let i = 1; i < 50; i += 1) {
   status = 0;
   price = faker.random.number({ min: 100, max: 1000 });
   const title = faker.lorem.sentence();
-  const categoryId = faker.random.number({ min: 1, max: 8 });
-  if (categoryId === 8) {
+  const categoryId = faker.random.arrayElement([1, 2, 3, 4, 5, 6, 7, 8]);
+  if (categoryId === 7) {
     status = 1;
     price = faker.random.number({ min: 2000, max: 5000 });
   }

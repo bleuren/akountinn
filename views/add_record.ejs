@@ -54,9 +54,10 @@
 </form>
 
 <script>
+  
   function changeCategory() {
-    var x = document.getElementById("category").value;
-    if (x == 8) {
+    var x = document.getElementById("category").options[document.getElementById("category").selectedIndex].text;
+    if (x == '收入') {
       radiobtn = document.getElementById("gridRadios2");
       radiobtn.checked = true;
     } else {

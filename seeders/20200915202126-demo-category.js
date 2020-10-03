@@ -9,6 +9,7 @@ module.exports = {
          *   isBetaMember: false
          * }], {});
          */
+
     await queryInterface.bulkInsert('Categories', [{
       id: 1,
       name: '食',
@@ -30,10 +31,10 @@ module.exports = {
       name: '投資',
     }, {
       id: 7,
-      name: '其他',
+      name: '收入',
     }, {
       id: 8,
-      name: '收入',
+      name: '其他',
     },
     ], {});
   },
