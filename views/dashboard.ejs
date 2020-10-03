@@ -168,13 +168,17 @@ function ajaxRequest(params) {
         var lookup = {};
         var items = obj;
         var labels = [];
-
+        /*
         for (var item, i = 0; item = items[i++];) {
             var txAtMonth = item.txAtMonth;
             if (!(txAtMonth in lookup)) {
                 lookup[txAtMonth] = 1;
                 labels.push(moment().month(txAtMonth).format("MMM"));
             }
+        }
+        */
+        for (var i = 0; i < 12; i++) {
+            labels.push(moment().month(i).format("MMM"));
         }
         var items = [];
         for (let i = 1; i <= categories.length; i++) {
@@ -183,16 +187,18 @@ function ajaxRequest(params) {
             }));
         }
         $.each(items, function(i, row) {
-            var tmp = new Array(12).fill(0);
-            $.each(row, function(i, r) {
-                tmp[r.Id] = r.price;
-            });
-            data.bar[i] = tmp;
+            if (row.length !=0 ) { 
+                var tmp = new Array(12).fill(0);
+                $.each(row, function(i, r) {
+                    tmp[r.Id] = r.price;
+                });
+                data.bar[i] = tmp;
+            }
         });
         var datasets = []; 
         var current = 0;
         for (let i = 0; i < data.bar.length; i++) {
-            if (data.bar[i].length!=0) {
+            if (Array.isArray(data.bar[i])) {
                 datasets.push({
                     label: categories[i].name,
                     backgroundColor: COLORS[current++],
