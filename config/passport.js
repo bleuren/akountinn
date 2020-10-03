@@ -13,7 +13,6 @@ module.exports = (passport) => {
           if (!user) {
             return done(null, false, { message: 'username not registered' });
           }
-
           // math passwords
           return bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) throw err;

@@ -171,7 +171,6 @@ function ajaxRequest(params) {
 
         for (var item, i = 0; item = items[i++];) {
             var txAtMonth = item.txAtMonth;
-
             if (!(txAtMonth in lookup)) {
                 lookup[txAtMonth] = 1;
                 labels.push(moment().month(txAtMonth).format("MMM"));
@@ -183,12 +182,12 @@ function ajaxRequest(params) {
                 return item.categoryId == i;
             }));
         }
-
         $.each(items, function(i, row) {
+            var tmp = new Array(12).fill(0);
             $.each(row, function(i, r) {
-                row[i] = r.price;
+                tmp[r.Id] = r.price;
             });
-            data.bar.push(row);
+            data.bar[i] = tmp;
         });
         var datasets = []; 
         var current = 0;
@@ -206,7 +205,6 @@ function ajaxRequest(params) {
             labels: labels,
             datasets: datasets
         };
-
         var canvas = document.getElementById('bar');
         var ctx = canvas.getContext("2d");
         var barChart = new Chart(ctx, {

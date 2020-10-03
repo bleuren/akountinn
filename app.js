@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 // express session
 app.use(session({
   secret: 'asdjkadsji',
-  resave: true,
+  resave: false,
   saveUninitialized: true,
 }));
 app.use(passport.initialize());
@@ -31,6 +31,10 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  next();
+});
+app.use((req, res, next) => {
+  console.log(`handling request for: ${req.url}`);
   next();
 });
 // Routes

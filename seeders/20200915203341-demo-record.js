@@ -3,7 +3,7 @@ const faker = require('faker');
 const data = [];
 let status;
 let price;
-for (let i = 1; i < 10; i += 1) {
+for (let i = 1; i < 50; i += 1) {
   status = 0;
   price = faker.random.number({ min: 100, max: 1000 });
   const title = faker.lorem.sentence();
@@ -18,7 +18,7 @@ for (let i = 1; i < 10; i += 1) {
   const remark = faker.lorem.paragraph();
   const userId = faker.random.number({ min: 1, max: 2 });
   const createdAt = faker.date.between('2019-01-01', '2020-01-01');
-  const txAt = faker.date.between('2019-01-01', '2020-01-01');
+  const txAt = createdAt;
   const updatedAt = createdAt;
   data.push({
     title,
