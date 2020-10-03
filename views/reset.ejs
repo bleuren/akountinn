@@ -1,0 +1,49 @@
+<style>
+  .form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+  }
+
+  .form-signin .checkbox {
+    font-weight: 400;
+  }
+
+  .form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .form-signin .form-control:focus {
+    z-index: 2;
+  }
+
+  .form-signin input[id="password"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .form-signin input[id="newPassword"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+</style>
+<section class="jumbotron text-center mt-4">
+  <h1 class="jumbotron-heading">重設你的密碼</h1>
+  <p><%- include ('./partials/messages') %></p>
+  <form class="form-signin" action="/users/reset" method="POST">
+    <label for="password" class="sr-only">舊密碼</label>
+    <input type="password" name="password" id="password" class="form-control" placeholder="Enter Old Password" required
+      autofocus />
+    <label for="newPassword" class="sr-only">新密碼</label>
+    <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Enter New Password"
+      required />
+    <button class="btn btn-lg btn-primary btn-block" type="submit">更新</button>
+  </form>
+</section>

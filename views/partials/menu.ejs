@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <div class="container d-flex flex-md-row justify-content-between">
+      <div class="navbar-brand">
+      <% if (loginStatus) { %>
+      <a href="/records/add"><button id="add" class="btn btn-success">
+      <i class="fa fa-plus"></i> 
+      </button></a>
+      <button id="remove" class="btn btn-danger" disabled>
+      <i class="fa fa-trash"></i>
+      </button>
+
+      <% } else{ %>
+            <a class="navbar-brand" href="#">Akountin</a>
+      <% } %>      
+      </div>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+            <% if (loginStatus) { %>
+            <li class="nav-item">
+                  <a class="nav-link" href="/dashboard">概觀</a>
+            </li>
+            <li class="nav-item">
+                  <a class="nav-link" href="/users/logout">收支圓餅圖</a>
+            </li>
+            <li class="nav-item">
+                  <a class="nav-link" href="/users/logout">每月收支長條圖</a>
+            </li>
+            <li class="nav-item">
+                  <a class="nav-link" href="/users/reset">更改密碼</a>
+            </li>
+            <li class="nav-item">
+                  <a class="nav-link" href="/users/logout">登出</a>
+            </li>
+            <% } else{ %>
+                  <form class="form-signin" action="/users/login" method="POST">
+                        <div class="input-group">
+                          <input type="text" name="username" class="form-control" placeholder="帳號" aria-label="Username" aria-describedby="basic-addon2">
+                          <input type="password" name="password" class="form-control" placeholder="密碼" aria-label="Password" aria-describedby="basic-addon2">
+                          <div class="input-group-append">
+                              <button class="btn btn-outline-secondary input-group-text" type="submit">登入</button>
+                          </div>
+                        </div>
+                  </form>                  
+            <% } %>
+            </ul>
+      </div>
+      </div>
+</nav>

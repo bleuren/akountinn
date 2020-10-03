@@ -1,0 +1,10 @@
+<h1>新增類別 </h1>
+<%- include ('./partials/messages') %>
+<form action="/categories/edit/<%= category.id %>" method="POST">
+  <div class="form-group">
+    <label for="name">類別</label>
+    <input name="name" type="text" class="form-control" id="name" value="<%= category.name %>">
+  </div>
+  <button type="submit" class="btn btn-primary">送出</button>
+  <a href="/dashboard"><button type="button" class="btn btn-danger">返回</button></a>
+</form>

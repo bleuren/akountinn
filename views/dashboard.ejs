@@ -1,0 +1,382 @@
+<div class="toolbar"></div>
+
+<div class="table-responsive">
+    <table 
+        id="table" 
+        data-search="true" 
+        data-search-align="left"
+        data-pagination-h-align="left"
+        data-pagination-detail-h-align="right"
+        data-show-export="false" 
+        data-click-to-select="true" 
+        data-toolbar=".toolbar"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        data-detail-view="true"
+        data-click-to-select="true"
+        data-detail-formatter="detailFormatter"
+        data-minimum-count-columns="2"
+        data-pagination="true"
+        data-sort-name="txAt"
+        data-sort-order="desc"
+        data-id-field="id"
+        data-page-list="[10, 25, 50, 100, all]"
+        data-show-footer="true"
+        data-show-copy-rows="true"
+        data-response-handler="responseHandler">
+    </table>
+</div>
+<canvas id="doughnut"></canvas>
+<canvas id="bar" class="d-none d-lg-block"></canvas>
+
+<script>
+var COLORS = [
+    'rgb(255, 99, 132)',
+    'rgb(54, 162, 235)',
+    'rgb(255, 205, 86)',
+    'rgba(51, 102, 204)',
+    'rgba(220, 57, 18)',
+    'rgba(255, 153, 0)',
+    'rgba(16, 150, 24)',
+    'rgba(153, 0, 153)',
+    'rgba(0, 153, 198)',
+    'rgba(221, 68, 119)',
+    'rgba(102, 170, 0)',
+    'rgba(184, 46, 46)',
+    'rgba(49, 99, 149)',
+    'rgba(153, 68, 153)',
+    'rgba(34, 170, 153)',
+    'rgba(170, 170, 17)',
+    'rgba(102, 51, 204)',
+    'rgba(230, 115, 0)',
+    'rgba(139, 7, 7)',
+    'rgba(101, 16, 103)',
+    'rgba(50, 146, 98)',
+    'rgba(85, 116, 166)',
+    'rgba(59, 62, 172)',
+    'rgba(183, 115, 34)',
+    'rgba(22, 214, 32)',
+    'rgba(185, 19, 131)',
+    'rgba(244, 53, 158)',
+    'rgba(156, 89, 53)',
+    'rgba(169, 196, 19)',
+    'rgba(42, 119, 141)',
+    'rgba(102, 141, 28)',
+    'rgba(190, 164, 19)',
+    'rgba(12, 89, 34)',
+    'rgba(116, 52, 17)',
+    'rgba(255, 99, 132)',
+    'rgba(54, 162, 235)',
+    'rgba(255, 206, 86)',
+    'rgba(75, 192, 192)',
+    'rgba(153, 102, 255)',
+    'rgba(255, 159, 64)',
+];
+
+function ajaxRequest(params) {
+    $.get('/records').then(function(obj) {
+        params.success(obj);
+        var categories; 
+        $.ajax({
+            type: 'GET',
+            url: '/categories',
+            async: false,
+            dataType: 'json',
+            success: function(data) {
+                categories = data;
+            }
+        });
+        var result = [];
+        var category = [];
+        var categoryId = [];
+        var data = {
+            doughnut: [],
+            bar: []
+        };
+        obj = obj.sort(function(a, b) {
+            return new Date(a.txAt) - new Date(b.txAt);
+        });
+
+        obj.reduce(function(res, value) {
+            value.txAtMonth = new Date(value.txAt).getMonth();
+            var key = value.category.name;
+            if (!res[key]) {
+                res[key] = {
+                    categoryId: value.categoryId,
+                    category: value.category.name,
+                    price: 0
+                };
+                result.push(res[key])
+            }
+            res[key].price += value.price;
+            return res;
+        }, {});
+        result = result.sort(function(a, b) {
+            return a.categoryId - b.categoryId;
+        });
+        $.each(result, function(i, row) {
+            category.push(row.category);
+            categoryId.push(row.categoryId);
+            data.doughnut.push(Math.abs(row.price));
+        });
+        data.doughnut = {
+                labels: category,
+                datasets: [{
+                    data: data.doughnut,
+                    borderWidth: 1,
+                    backgroundColor: COLORS,
+                }]
+            }
+        var canvas = document.getElementById('doughnut');
+        var ctx = canvas.getContext("2d");
+        var doughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data.doughnut
+        });
+        
+        document.getElementById('doughnut').onclick = function(evt) {
+        var activePoints = doughnutChart.getElementsAtEvent(evt);
+        if (activePoints[0]) {
+            var chartData = activePoints[0]['_chart'].config.data;
+            var idx = activePoints[0]['_index'];
+
+            var label = chartData.labels[idx];
+            var value = chartData.datasets[0].data[idx];
+            var url = "label="+ label + "?/records/" +categories.find(element => element.name == label).id + "&value=" + value;
+            $.get('/records/'+categories.find(element => element.name == label).id, function(data) {
+                $('#table').bootstrapTable('load', data);
+            });
+            console.log('/records/'+categories.find(element => element.name == label).id);
+        }
+        };
+        var result = [];
+
+        obj.reduce(function(res, value) {
+            var key = value.txAtMonth + ':' + value.categoryId;
+            if (!res[key]) {
+                res[key] = {
+                    Id: value.txAtMonth,
+                    categoryId: value.categoryId,
+                    category: value.category.name,
+                    price: 0
+                };
+                result.push(res[key]);
+            }
+            res[key].price += value.price;
+            return res;
+        }, {});
+        var lookup = {};
+        var items = obj;
+        var labels = [];
+
+        for (var item, i = 0; item = items[i++];) {
+            var txAtMonth = item.txAtMonth;
+
+            if (!(txAtMonth in lookup)) {
+                lookup[txAtMonth] = 1;
+                labels.push(moment().month(txAtMonth).format("MMM"));
+            }
+        }
+        var items = [];
+        for (let i = 1; i <= categories.length; i++) {
+            items.push(result.filter(function(item, index, array) {
+                return item.categoryId == i;
+            }));
+        }
+
+        $.each(items, function(i, row) {
+            $.each(row, function(i, r) {
+                row[i] = r.price;
+            });
+            data.bar.push(row);
+        });
+        var datasets = []; 
+        var current = 0;
+        for (let i = 0; i < data.bar.length; i++) {
+            if (data.bar[i].length!=0) {
+                datasets.push({
+                    label: categories[i].name,
+                    backgroundColor: COLORS[current++],
+                    data: data.bar[i]
+                });
+            }
+        }
+        
+        data.bar = {
+            labels: labels,
+            datasets: datasets
+        };
+
+        var canvas = document.getElementById('bar');
+        var ctx = canvas.getContext("2d");
+        var barChart = new Chart(ctx, {
+        type: 'bar',
+        data: data.bar,
+        options: {
+                title: {
+                    display: true,
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                }
+            }
+        });        
+    })
+}
+
+
+var $table = $('#table')
+var $remove = $('#remove')
+var selections = []
+
+function getIdSelections() {
+    return $.map($table.bootstrapTable('getSelections'), function(row) {
+        return row.id
+    })
+}
+
+function responseHandler(res) {
+    $.each(res.rows, function(i, row) {
+        row.state = $.inArray(row.id, selections) !== -1
+    })
+    return res
+}
+
+function detailFormatter(index, row) {
+    var html = []
+    html.push('<p><b>ID :</b> ' + row.id + '</p>')
+    html.push('<p><b>類別 :</b> ' + row.category.name + '</p>')
+    html.push('<p><b>標題 :</b> ' + row.title + '</p>')
+    html.push('<p><b>備註 :</b> ' + row.remark + '</p>')
+    html.push('<p><b>發布者 :</b> ' + row.user.username + '</p>')
+    html.push('<p><b><a href="/records/edit/'+ row.id +'">[編輯]</a></b> </p>')
+    return html.join('')
+}
+
+function totalTextFormatter(data) {
+    return '總額'
+}
+
+function totalPriceFormatter(data) {
+    var field = this.field
+    return '$' + data.map(function(row) {
+        return +row[field]
+    }).reduce(function(sum, i) {
+        return sum + i
+    }, 0)
+}
+
+function dateFormatter(data) {
+    return moment(data).format('YYYY-MM-DD');
+}
+
+function initTable() {
+    $table.bootstrapTable('destroy').bootstrapTable({
+        theadClasses: 'thead-light',
+        undefinedText: 'N/A',
+        ajax: 'ajaxRequest',
+        locale: $('#locale').val(),
+        columns: [
+            [{
+                field: 'state',
+                checkbox: true,
+                sortable: false,
+                align: 'center',
+                valign: 'middle',
+                class: 'd-none',
+            }, {
+                field: 'id',
+                title: '編號',
+                sortable: true,
+                align: 'center',
+                visible: false,
+            }, {
+                field: 'txAt',
+                title: '日期',
+                sortable: true,
+                align: 'center',
+                formatter: dateFormatter,
+                footerFormatter: totalTextFormatter,
+            }, {
+                field: 'title',
+                title: '項目',
+                sortable: true,
+                align: 'center',
+            }, {
+                field: 'category.name',
+                title: '類別',
+                sortable: true,
+                align: 'center',
+                visible: false,
+            }, {
+                field: 'status',
+                title: '收支',
+                sortable: true,
+                align: 'center',
+                visible: false,
+            }, {
+                field: 'price',
+                title: '金額',
+                sortable: true,
+                align: 'center',
+                footerFormatter: totalPriceFormatter
+            }, {
+                field: 'remark',
+                title: '備註',
+                sortable: true,
+                align: 'center',
+                visible: false,
+            }, {
+                field: 'userId',
+                title: '發布',
+                sortable: true,
+                align: 'center',
+                visible: false,
+            }]
+        ]
+    })
+    $table.on('check.bs.table uncheck.bs.table ' +
+        'check-all.bs.table uncheck-all.bs.table',
+        function() {
+            $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
+            selections = getIdSelections()
+        })
+
+    $remove.click(function() {
+        var ids = getIdSelections()
+        ids.forEach(
+            element =>
+            $.ajax({
+                type: "DELETE",
+                url: '/records/delete/' + element,
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(err) {
+                    console.log('Error:', err);
+                }
+            })
+        );
+        $table.bootstrapTable('remove', {
+            field: 'id',
+            values: ids
+        })
+        $remove.prop('disabled', true)
+    })
+}
+
+$(function() {
+    initTable()
+    $('#locale').change(initTable)
+})
+</script>
