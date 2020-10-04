@@ -10,32 +10,41 @@ module.exports = {
          * }], {});
          */
 
-    await queryInterface.bulkInsert('Categories', [{
-      id: 1,
-      name: '食',
-    },
-    {
-      id: 2,
-      name: '衣',
-    }, {
-      id: 3,
-      name: '住',
-    }, {
-      id: 4,
-      name: '行',
-    }, {
-      id: 5,
-      name: '娛樂',
-    }, {
-      id: 6,
-      name: '投資',
-    }, {
-      id: 7,
-      name: '收入',
-    }, {
-      id: 8,
-      name: '其他',
-    },
+    await queryInterface.bulkInsert('Categories', [
+      {
+        name: '食',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: '衣',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }, {
+        name: '住',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }, {
+        name: '行',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }, {
+        name: '娛樂',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }, {
+        name: '投資',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }, {
+        name: '收入',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }, {
+        name: '其他',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ], {});
   },
 

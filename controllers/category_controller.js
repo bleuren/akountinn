@@ -21,11 +21,6 @@ exports.category_create_post = (req, res) => {
   const { name } = req.body;
   Category.create({
     name,
-  }).then((item) => {
-    res.json({
-      Message: 'Created item.',
-      Item: item,
-    });
   }).catch((err) => {
     console.log(err);
   });

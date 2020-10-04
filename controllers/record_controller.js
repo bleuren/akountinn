@@ -49,11 +49,6 @@ exports.record_create_post = (req, res) => {
     price,
     remark,
     userId: req.user,
-  }).then((item) => {
-    res.json({
-      Message: 'Created item.',
-      Item: item,
-    });
   }).catch((err) => {
     console.log(err);
   });
