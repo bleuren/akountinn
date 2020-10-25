@@ -199,9 +199,10 @@ for (let i = 0; i < data.bar.length; i += 1) {
   if (Array.isArray(data.bar[i])) {
     datasets.push({
       label: categories[i].name,
-      backgroundColor: COLORS[current += 1],
+      backgroundColor: COLORS[current],
       data: data.bar[i],
     });
+    current += 1;
   }
 }
 
