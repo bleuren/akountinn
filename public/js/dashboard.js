@@ -127,6 +127,7 @@ const table = document.getElementById('price_per_categories');
 const tableData = Object.keys(result[0]);
 generateTableHead(table, tableData);
 generateTable(table, result);
+// $('#price_per_categories').bootstrapTable('load', result);
 data.doughnut = {
   labels: category,
   datasets: [{
@@ -374,3 +375,4 @@ $(() => {
   initTable();
   $('#locale').change(initTable);
 });
+
