@@ -46,29 +46,6 @@ const COLORS = [
   'rgba(153, 102, 255)',
   'rgba(255, 159, 64)',
 ];
-function generateTableHead(table, data) {
-  const thead = table.createTHead();
-  const row = thead.insertRow();
-  for (const key of data) {
-    const th = document.createElement('th');
-    const text = document.createTextNode(key);
-    th.appendChild(text);
-    row.appendChild(th);
-  }
-}
-
-function generateTable(table, data) {
-  for (const element of data) {
-    const row = table.insertRow();
-    for (key in element) {
-      if (Object.prototype.hasOwnProperty.call(element, key)) {
-        const cell = row.insertCell();
-        const text = document.createTextNode(element[key]);
-        cell.appendChild(text);
-      }
-    }
-  }
-}
 
 let records = $.ajax({
   type: 'GET',
@@ -123,11 +100,7 @@ $.each(result, (i) => {
   result[i].price_per_day = Math.round(result[i].price / days);
   result[i].price_per_months = Math.round(result[i].price / months);
 });
-const table = document.getElementById('price_per_categories');
-const tableData = Object.keys(result[0]);
-generateTableHead(table, tableData);
-generateTable(table, result);
-// $('#price_per_categories').bootstrapTable('load', result);
+
 data.doughnut = {
   labels: category,
   datasets: [{
@@ -159,7 +132,7 @@ document.getElementById('doughnut').onclick = function onclick(evt) {
   }
 };
 
-result = [];
+const resultByMonth = [];
 
 records.reduce((res, value) => {
   const key = `${value.txAtMonth}:${value.categoryId}`;
@@ -170,19 +143,18 @@ records.reduce((res, value) => {
       category: value.category.name,
       price: 0,
     };
-    result.push(res[key]);
+    resultByMonth.push(res[key]);
   }
   res[key].price += value.price;
   return res;
 }, {});
-let items = records;
+const items = [];
 const labels = [];
 for (let i = 0; i < 12; i += 1) {
   labels.push(moment().month(i).format('MMM'));
 }
-items = [];
 $.each(categories, (i, row) => {
-  items.push(result.filter((item, index, array) => item.categoryId === categories[i].id));
+  items.push(resultByMonth.filter((item, index, array) => item.categoryId === categories[i].id));
 });
 
 $.each(items, (i, row) => {
@@ -236,14 +208,14 @@ const barChart = new Chart(ctx, {
     },
   },
 });
-console.log(categories);
 
-const $table = $('#table');
+const $tableOverView = $('#tableOverView');
+const $tableByAvgPrice = $('#tableByAvgPrice');
 const $remove = $('#remove');
 let selections = [];
 
 function getIdSelections() {
-  return $.map($table.bootstrapTable('getSelections'), (row) => row.id);
+  return $.map($tableOverView.bootstrapTable('getSelections'), (row) => row.id);
 }
 
 function responseHandler(res) {
@@ -278,7 +250,41 @@ function dateFormatter(data) {
 }
 
 function initTable() {
-  $table.bootstrapTable('destroy').bootstrapTable({
+  $tableByAvgPrice.bootstrapTable({
+    theadClasses: 'thead-light',
+    undefinedText: 'N/A',
+    data: result,
+    locale: $('#locale').val(),
+    columns: [
+      [{
+        field: 'categoryId',
+        sortable: true,
+        visible: false,
+      }, {
+        field: 'category',
+        title: '類別',
+        sortable: true,
+        align: 'center',
+      }, {
+        field: 'price',
+        title: '總金額',
+        sortable: true,
+        align: 'center',
+      }, {
+        field: 'price_per_day',
+        title: '每日金額',
+        sortable: true,
+        align: 'center',
+      }, {
+        field: 'price_per_months',
+        title: '每月金額',
+        sortable: true,
+        align: 'center',
+      }],
+    ],
+  });
+
+  $tableOverView.bootstrapTable('destroy').bootstrapTable({
     theadClasses: 'thead-light',
     undefinedText: 'N/A',
     data: records,
@@ -342,10 +348,10 @@ function initTable() {
       }],
     ],
   });
-  $table.on('check.bs.table uncheck.bs.table '
+  $tableOverView.on('check.bs.table uncheck.bs.table '
         + 'check-all.bs.table uncheck-all.bs.table',
   () => {
-    $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+    $remove.prop('disabled', !$tableOverView.bootstrapTable('getSelections').length);
     selections = getIdSelections();
   });
 
@@ -363,7 +369,7 @@ function initTable() {
         },
       }),
     );
-    $table.bootstrapTable('remove', {
+    $tableOverView.bootstrapTable('remove', {
       field: 'id',
       values: ids,
     });
@@ -375,4 +381,3 @@ $(() => {
   initTable();
   $('#locale').change(initTable);
 });
-
