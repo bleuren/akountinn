@@ -6,8 +6,3 @@ exports.dashboard = (req, res) => {
     user: req.user,
   });
 };
-exports.analysis = (req, res) => {
-  res.render('analysis', {
-    user: req.user,
-  });
-};
