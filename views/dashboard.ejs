@@ -1,9 +1,31 @@
-<div class="toolbar"></div>
-<div class="table-responsive">
-    <table id="tableOverView"></table>
-    <table id="tableByAvgPrice"></table>
-</div>
-<canvas id="doughnut"></canvas>
-<canvas id="bar" class="d-none d-lg-block"></canvas>
+<ul class="nav nav-pills">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#tab-tableOverView">概觀</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#tab-tableByAvgPrice">均消</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#tab-doughnut">收支圓餅圖</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#tab-bar">每月收支長條圖</a>
+    </li>
+</ul>
 
+<div class="tab-content">
+    <div id="tab-tableOverView" class="tab-pane fade in show active">
+        <div id="toolbarOverView" class="toolbar"></div>
+        <table id="tableOverView"></table>
+    </div>
+    <div id="tab-tableByAvgPrice" class="tab-pane fade">
+        <table id="tableByAvgPrice"></table>
+    </div>
+    <div id="tab-doughnut" class="tab-pane fade">
+        <canvas id="doughnut"></canvas>
+    </div>
+    <div id="tab-bar" class="tab-pane fade">
+        <canvas id="bar"></canvas>
+    </div>
+</div>
 <script src="/js/dashboard.js"></script>

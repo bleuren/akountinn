@@ -61,6 +61,8 @@ $.get('/records', (records) => {
     $tableByAvgPrice.bootstrapTable({
       theadClasses: 'thead-light',
       undefinedText: 'N/A',
+      showFooter: true,
+      toolbar: '#toolbarByAvgPrice',
       data: records.priceByCategory,
       locale: $('#locale').val(),
       columns: [
@@ -73,21 +75,25 @@ $.get('/records', (records) => {
           title: '類別',
           sortable: true,
           align: 'center',
+          footerFormatter: totalTextFormatter,
         }, {
           field: 'price',
           title: '總金額',
           sortable: true,
           align: 'center',
+          footerFormatter: totalPriceFormatter,
         }, {
           field: 'price_per_day',
           title: '每日金額',
           sortable: true,
           align: 'center',
+          footerFormatter: totalPriceFormatter,
         }, {
           field: 'price_per_months',
           title: '每月金額',
           sortable: true,
           align: 'center',
+          footerFormatter: totalPriceFormatter,
         }],
       ],
     });
@@ -110,7 +116,7 @@ $.get('/records', (records) => {
       paginationDetailHAlign: 'right',
       paginationHAlign: 'left',
       searchAlign: 'left',
-      toolbar: '.toolbar',
+      toolbar: '#toolbarOverView',
       sortName: 'txAt',
       sortOrder: 'desc',
       detailFormatter,
