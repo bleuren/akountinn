@@ -1,32 +1,9 @@
 <div class="toolbar"></div>
-
 <div class="table-responsive">
-    <table 
-        id="tableOverView" 
-        data-search="true" 
-        data-search-align="left"
-        data-pagination-h-align="left"
-        data-pagination-detail-h-align="right"
-        data-show-export="false" 
-        data-click-to-select="true" 
-        data-toolbar=".toolbar"
-        data-show-columns="true"
-        data-show-columns-toggle-all="true"
-        data-detail-view="true"
-        data-click-to-select="true"
-        data-detail-formatter="detailFormatter"
-        data-minimum-count-columns="2"
-        data-pagination="true"
-        data-sort-name="txAt"
-        data-sort-order="desc"
-        data-id-field="id"
-        data-page-list="[10, 25, 50, 100, all]"
-        data-show-footer="true"
-        data-show-copy-rows="true"
-        data-response-handler="responseHandler">
-    </table>
+    <table id="tableOverView"></table>
+    <table id="tableByAvgPrice"></table>
 </div>
 <canvas id="doughnut"></canvas>
 <canvas id="bar" class="d-none d-lg-block"></canvas>
-<table class="table" id="tableByAvgPrice"></table>
+
 <script src="/js/dashboard.js"></script>
