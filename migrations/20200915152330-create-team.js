@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Categories', {
+    await queryInterface.createTable('Teams', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -8,9 +8,13 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       name: {
-        unique: true,
-        allowNull: false,
         type: Sequelize.STRING,
+      },
+      owner: {
+        type: Sequelize.INTEGER,
+      },
+      member: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -20,9 +24,15 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+    }, {
+      uniqueKeys: {
+        actions_unique: {
+          fields: ['owner', 'member'],
+        },
+      },
     });
   },
   down: async (queryInterface) => {
-    await queryInterface.dropTable('Categories');
+    await queryInterface.dropTable('Teams');
   },
 };

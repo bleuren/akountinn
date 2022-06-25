@@ -25,6 +25,9 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
       },
+      teamId: {
+        type: Sequelize.INTEGER,
+      },
       txAt: {
         type: Sequelize.DATEONLY,
       },

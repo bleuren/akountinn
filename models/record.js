@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.User, { as: 'user' });
       this.belongsTo(models.Category, { as: 'category' });
+      this.belongsTo(models.Team, { as: 'team' });
     }
   }
   Record.init({

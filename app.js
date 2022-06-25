@@ -42,6 +42,7 @@ app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
 app.use('/records', require('./routes/records'));
 app.use('/categories', require('./routes/categories'));
+app.use('/teams', require('./routes/teams'));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

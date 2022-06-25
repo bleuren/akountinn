@@ -1,22 +1,22 @@
 {
   "development": {
-    "username": "bleuren",
-    "password": "pa$$w0rD",
-    "database": "akountin",
+    "username": "root",
+    "password": "",
+    "database": "akountinn",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "mysql"
   },
   "test": {
-    "username": "bleuren",
-    "password": "pa$$w0rD",
-    "database": "akountin",
+    "username": "root",
+    "password": "",
+    "database": "akountinn",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "mysql"
   },
   "production": {
     "use_env_variable": "DATABASE_URL",
-    "protocol": "postgres",
-    "dialect": "postgres",
+    "protocol": "mysql",
+    "dialect": "mysql",
     "dialectOptions": {
       "ssl": {
         "require": true,

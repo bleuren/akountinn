@@ -1,8 +1,39 @@
+<ul class="nav nav-pills">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#tab-tableOverView">收支表</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#tab-tableByAvgPrice">均消</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#tab-doughnut">收支圓餅圖</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#tab-bar">每月收支長條圖</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div id="tab-tableOverView" class="tab-pane fade in show active">
+        <div id="toolbarOverView" class="toolbar"></div>
+        <table id="tableOverView"></table>
+    </div>
+    <div id="tab-tableByAvgPrice" class="tab-pane fade">
+        <table id="tableByAvgPrice"></table>
+    </div>
+    <div id="tab-doughnut" class="tab-pane fade">
+        <canvas id="doughnut"></canvas>
+    </div>
+    <div id="tab-bar" class="tab-pane fade">
+        <canvas id="bar"></canvas>
+    </div>
+</div>
+<script>
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-$.get('/records', (records) => {
+$.get('/records?tid=<%= team %>', (records) => {
   let canvas = document.getElementById('doughnut');
   let ctx = canvas.getContext('2d');
   const doughnut = new Chart(ctx, records.charts.doughnut);
@@ -17,7 +48,7 @@ $.get('/records', (records) => {
       const idx = activePoints[0]._index;
 
       const label = chartData.labels[idx];
-      $.get(`/records/${records.categories.find((element) => element.name === label).id}`, (data) => {
+      $.get(`/records/${records.categories.find((element) => element.name === label).id}?tid=<%= team %>`, (data) => {
         $('#tableOverView').bootstrapTable('load', data);
       });
       console.log(`/records/${records.categories.find((element) => element.name === label).id}`);
@@ -40,6 +71,7 @@ $.get('/records', (records) => {
     html.push(`<p><b>標題 :</b> ${row.title}</p>`);
     html.push(`<p><b>備註 :</b> ${row.remark}</p>`);
     html.push(`<p><b>發布者 :</b> ${row.user.username}</p>`);
+    html.push(`<p><b>群組 :</b> ${row.team.name}</p>`);
     html.push(`<p><b><a href="/records/edit/${row.id}">[編輯]</a></b> </p>`);
     return html.join('');
   }
@@ -58,7 +90,7 @@ $.get('/records', (records) => {
   }
 
   function initTable() {
-    $tableByAvgPrice.bootstrapTable({
+    $tableByAvgPrice.bootstrapTable('destroy').bootstrapTable({
       theadClasses: 'thead-light',
       undefinedText: 'N/A',
       showFooter: true,
@@ -214,3 +246,5 @@ $.get('/records', (records) => {
     $('#locale').change(initTable);
   });
 });
+
+</script>

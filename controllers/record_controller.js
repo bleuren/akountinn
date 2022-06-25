@@ -1,8 +1,9 @@
 /* eslint-disable no-shadow */
 const moment = require('moment');
-const { Record } = require('../models');
-const { User } = require('../models');
-const { Category } = require('../models');
+const { Op } = require('sequelize');
+const {
+  Category, Record, User, Team,
+} = require('../models');
 
 exports.index = (req, res) => {
   res.send('NOT IMPLEMENTED: Site Home Page');
@@ -54,8 +55,19 @@ exports.record_list = async (req, res) => {
   ];
   const categories = await Category.findAll({ order: ['id'] });
   let summary = await Record.findAll({
-    include: [{ model: User, attributes: ['id', 'username'], as: 'user' }, { model: Category, attributes: ['id', 'name'], as: 'category' }],
+    include: [
+      { model: User, attributes: ['id', 'username'], as: 'user' },
+      { model: Category, attributes: ['id', 'name'], as: 'category' },
+      { model: Team, attributes: ['name', 'owner', 'member'], as: 'team' },
+    ],
     order: [['txAt', 'DESC']],
+    where: {
+      [Op.or]: [
+        { '$team.owner$': req.user },
+        { '$team.member$': req.user },
+      ],
+      teamId: req.query.teamId,
+    },
   });
   summary = summary.sort((a, b) => new Date(a.txAt) - new Date(b.txAt));
   let priceByCategory = [];
@@ -65,6 +77,14 @@ exports.record_list = async (req, res) => {
     doughnut: [],
     bar: [],
   };
+
+  /*
+  summary = summary.filter((a) => {
+    const date = new Date(a.txAt);
+    return (date >= new Date('2019-07-10') && date <= new Date('2019-08-20'));
+  });
+  */
+
   summary.reduce((res, value) => {
     // eslint-disable-next-line no-param-reassign
     value.txAtMonth = new Date(value.txAt).getMonth();
@@ -191,9 +211,20 @@ exports.record_list = async (req, res) => {
 // Display detail page for a specific record.
 exports.record_detail = (req, res) => {
   Record.findAll({
-    include: [{ model: User, attributes: ['id', 'username'], as: 'user' }, { model: Category, attributes: ['id', 'name'], as: 'category' }],
+    include: [
+      { model: User, attributes: ['id', 'username'], as: 'user' },
+      { model: Category, attributes: ['id', 'name'], as: 'category' },
+      { model: Team, attributes: ['name', 'owner', 'member'], as: 'team' },
+    ],
     order: [['txAt', 'DESC']],
-    where: { categoryId: req.params.id },
+    where: {
+      [Op.or]: [
+        { '$team.owner$': req.user },
+        { '$team.member$': req.user },
+      ],
+      teamId: req.query.teamId,
+      categoryId: req.params.id,
+    },
   })
     .then((records) => res.json(records));
 };
@@ -201,13 +232,21 @@ exports.record_detail = (req, res) => {
 // Display record create form on GET.
 exports.record_create_get = async (req, res) => {
   const categories = await Category.findAll({ order: ['id'] });
-  res.render('add_record', { moment, categories });
+  const teams = await Team.findAll({
+    where: {
+      [Op.or]: [
+        { owner: req.user },
+        { member: req.user },
+      ],
+    },
+  });
+  res.render('add_record', { moment, categories, teams });
 };
 
 // Handle record create on POST.
 exports.record_create_post = (req, res) => {
   const {
-    txAt, category, title, status, remark,
+    txAt, category, title, status, remark, teamId,
   } = req.body;
   let { price } = req.body;
   if (status === '0') {
@@ -221,11 +260,12 @@ exports.record_create_post = (req, res) => {
     price,
     remark,
     userId: req.user,
+    teamId,
   }).catch((err) => {
     console.log(err);
   });
   req.flash('success_msg', '新增成功!');
-  res.redirect('/dashboard');
+  res.redirect(`/analysis/${teamId}`);
 };
 
 // Display record delete form on GET.
@@ -249,15 +289,25 @@ exports.record_delete_post = (req, res) => {
 // Display record update form on GET.
 exports.record_update_get = async (req, res) => {
   const categories = await Category.findAll({ order: ['id'] });
+  const teams = await Team.findAll({
+    where: {
+      [Op.or]: [
+        { owner: req.user },
+        { member: req.user },
+      ],
+    },
+  });
   const record = await Record.findByPk(req.params.id);
   record.price = Math.abs(record.price);
-  res.render('edit_record', { moment, categories, record });
+  res.render('edit_record', {
+    moment, categories, record, teams,
+  });
 };
 
 // Handle record update on POST.
 exports.record_update_post = async (req, res) => {
   const {
-    txAt, category, title, status, remark,
+    txAt, category, title, status, remark, teamId,
   } = req.body;
   let { price } = req.body;
   if (status === '0') {
@@ -272,7 +322,8 @@ exports.record_update_post = async (req, res) => {
   record.status = status;
   record.price = price;
   record.remark = remark;
+  record.teamId = teamId;
   await record.save();
   req.flash('success_msg', '新增成功!');
-  res.redirect('/dashboard');
+  res.redirect(`/analysis/${teamId}`);
 };

@@ -11,31 +11,34 @@ module.exports = {
     const data = [];
 
     const categories = await queryInterface.sequelize.query(
-      'SELECT id from "Categories";',
+      'SELECT id FROM categories;',
     );
     const income = await queryInterface.sequelize.query(
-      'SELECT * from "Categories" WHERE name = \'收入\';',
+      'SELECT * FROM categories WHERE name = \'收入\';',
     );
-    const users = await queryInterface.sequelize.query(
-      'SELECT id from "Users";',
+    const teams = await queryInterface.sequelize.query(
+      'SELECT id,owner,member FROM teams;',
     );
     let status;
     let price;
-    for (let i = 1; i < 50; i += 1) {
+    for (let i = 1; i < 1000; i += 1) {
       status = 0;
-      price = faker.random.number({ min: 100, max: 1000 });
-      const cIndex = faker.random.number({ min: 0, max: categories[0].length - 1 });
+      price = faker.datatype.number({ min: 100, max: 1000 });
+      const cIndex = faker.datatype.number({ min: 0, max: categories[0].length - 1 });
       const title = faker.lorem.sentence();
       const categoryId = categories[0][cIndex].id;
       if (categoryId === income[0][0].id) {
         status = 1;
-        price = faker.random.number({ min: 2000, max: 5000 });
+        price = faker.datatype.number({ min: 2000, max: 5000 });
       }
       if (status === 0) {
         price *= (-1);
       }
       const remark = faker.lorem.paragraph();
-      const userId = users[0][faker.random.number({ min: 0, max: 1 })].id;
+      const teamIndex = faker.datatype.number({ min: 0, max: teams[0].length - 1 });
+      const team = [teams[0][teamIndex].owner, teams[0][teamIndex].member];
+      const userId = team[faker.datatype.number(1)];
+      const teamId = teams[0][teamIndex].id;
       const createdAt = faker.date.between('2019-01-01', '2020-01-01');
       const txAt = createdAt;
       const updatedAt = createdAt;
@@ -46,6 +49,7 @@ module.exports = {
         price,
         remark,
         userId,
+        teamId,
         txAt,
         createdAt,
         updatedAt,

@@ -25,7 +25,7 @@ exports.category_create_post = (req, res) => {
     console.log(err);
   });
   req.flash('success_msg', '新增成功!');
-  res.redirect('/dashboard');
+  res.redirect('/analysis');
 };
 
 // Display category delete form on GET.
@@ -60,5 +60,5 @@ exports.category_update_post = async (req, res) => {
   category.name = name;
   await category.save();
   req.flash('success_msg', '新增成功!');
-  res.redirect('/dashboard');
+  res.redirect('/analysis');
 };

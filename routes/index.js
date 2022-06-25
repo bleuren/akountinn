@@ -6,5 +6,6 @@ const { ensureAuthenticated } = require('../config/auth');
 
 router.get('/', indexController.index);
 router.get('/dashboard', ensureAuthenticated, indexController.dashboard);
+router.get('/analysis/:teamId', ensureAuthenticated, indexController.analysis);
 
 module.exports = router;
